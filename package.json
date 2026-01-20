@@ -1,0 +1,14 @@
+{
+  "name": "class-project",
+  "version": "1.0.0",
+  "description": "This is my first class project",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+    
+  },
+  "keywords": [],
+  "author": "Rudra Pratap Singh",
+  "license": "ISC",
+  "type": "commonjs"
+}
