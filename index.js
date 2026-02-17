@@ -1,57 +1,35 @@
-const fs = require("fs");
+//dependencies
+import express from 'express';
+import cors from 'cors';
+import helmet from 'helmet';
+import dotenv from 'dotenv';
+import morgan from 'morgan';
+
+//Scripts
+import question1 from "./question1.js";
+import signup from "./signUp.js";
+import question3 from "./question3.js";
+import errorPage from "./question4.js";
 
 
-function createLog(date, type, data) {
-  fs.writeFileSync(
-    "hello.txt",
-    `Date: ${date}\nType: ${type}\nMessage: ${data}\n\n`
-  );
-  return "Log created successfully";
-}
+dotenv.config();
+const app = express();
+app.use(express.json())
+app.use(helmet());
+app.use(cors());
+app.use(morgan("dev"));
+// testing
+let port = process.env.PORT || 8001
+app.get("/", (req,res)=>{
+    res.send("<h1>Hii Food App is Running</h1>");
+});
+//running scripts
+app.post("/solve1/:id",question1);
+app.post("/signup",signup);
+app.post("/contact",question3);
+app.post("/",errorPage);
 
-
-function readLog() {
-  if (!fs.existsSync("hello.txt")) {
-    return "File does not exist";
-  }
-
-  const content = fs.readFileSync("hello.txt", "utf-8");
-  return content;
-}
-
-
-function updateLog(date, type, data) {
-  fs.appendFileSync(
-    "hello.txt",
-    `Date: ${date}\nType: ${type}\nMessage: ${data}\n\n`
-  );
-  return "Log updated successfully";
-}
-
-
-function deleteLog() {
-  if (!fs.existsSync("hello.txt")) {
-    return "File already deleted";
-  }
-
-  fs.unlinkSync("hello.txt");
-  return "Log deleted successfully";
-}
-
-
-function writeLog() {
-  fs.appendFileSync(
-    "hello.txt",
-    `Time: ${new Date()}\nMessage: Log created\n-----------------\n`
-  );
-
-  console.log("Log written");
-}
-
-console.log(createLog(new Date(), "ERROR", "This is an error"));
-//console.log(updateLog(new Date(), "INFO", "This is info log"));
-console.log(readLog());
-setInterval(() => {
-  console.log(updateLog(new Date(), "INFO", "This is info log"));
-}, 1000);
-updateLog(new Date(), "INFO", "This is info log");
+//checking connection
+app.listen(port, ()=>{
+    console.log("Server Connected on the port");
+})
