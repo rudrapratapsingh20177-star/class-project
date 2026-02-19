@@ -1,57 +1,40 @@
-const fs = require("fs");
+//dependencies
+import express from "express";
+import cors from "cors";
+import helmet from "helmet";
+import morgan from "morgan";
+import dotenv from "dotenv";
 
+//Scripts
+import addBooks from "./Q4_CreateBook.js";
+import updateBook from "./Q4_updateBook.js";
+import deleteBook from "./Q4_deleteBook.js";
+import readBook from "./Q4_readBook.js";
+import authorBook from "./Q1_authorFiltering.js";
+import yearBook from "./Q1_yearFiltering.js";
 
-function createLog(date, type, data) {
-  fs.writeFileSync(
-    "hello.txt",
-    `Date: ${date}\nType: ${type}\nMessage: ${data}\n\n`
-  );
-  return "Log created successfully";
-}
+//running all dependencies
+dotenv.config();
+const app = express();
+app.use(express.json())
+app.use(helmet());
+app.use(cors());
+app.use(morgan("dev"));
 
+// testing
+let port = process.env.PORT || 8001
+app.get("/", (req,res)=>{
+    res.send("<h1>Hii</h1>");
+});
 
-function readLog() {
-  if (!fs.existsSync("hello.txt")) {
-    return "File does not exist";
-  }
-
-  const content = fs.readFileSync("hello.txt", "utf-8");
-  return content;
-}
-
-
-function updateLog(date, type, data) {
-  fs.appendFileSync(
-    "hello.txt",
-    `Date: ${date}\nType: ${type}\nMessage: ${data}\n\n`
-  );
-  return "Log updated successfully";
-}
-
-
-function deleteLog() {
-  if (!fs.existsSync("hello.txt")) {
-    return "File already deleted";
-  }
-
-  fs.unlinkSync("hello.txt");
-  return "Log deleted successfully";
-}
-
-
-function writeLog() {
-  fs.appendFileSync(
-    "hello.txt",
-    `Time: ${new Date()}\nMessage: Log created\n-----------------\n`
-  );
-
-  console.log("Log written");
-}
-
-console.log(createLog(new Date(), "ERROR", "This is an error"));
-//console.log(updateLog(new Date(), "INFO", "This is info log"));
-console.log(readLog());
-setInterval(() => {
-  console.log(updateLog(new Date(), "INFO", "This is info log"));
-}, 1000);
-updateLog(new Date(), "INFO", "This is info log");
+//running scripts
+app.post("/add",addBooks);
+app.post("/update/:id",updateBook);
+app.post("/delete/:id",deleteBook);
+app.post("/read",readBook);
+app.post("/author",authorBook);
+app.post("/year",yearBook);
+//connection
+app.listen(port,()=>{
+    console.log(`Server running on http://localhost:${port}`);
+})
