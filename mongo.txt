@@ -1,0 +1,359 @@
+Exercise 1: Database Selection
+Choose the appropriate database type (SQL/NoSQL) and justify:
+1. Online banking system 
+   ans: SQL--Requires high consistency & accuracy 
+             Uses ACID properties (Atomicity, Consistency, Isolation, Durability)
+             Structured data (accounts, transactions, users)
+2. Social media platform
+   ans: NOSQL--Handles huge, unstructured data (posts, likes, comments, media)
+               Needs high scalability (millions of users)
+               Flexible schema (new features added frequently)
+3. Real-time chat application
+   ans: NOSQL -- Requires fast read/write operations 
+                 Handles real-time messaging data
+                 Data is semi-structured (messages, timestamps, users)
+4. Hospital patient records
+   ans: SQL-- Needs data integrity and accuracy 
+              Structured data (patients, doctors, reports)
+              Critical to avoid errors in medical data
+5. IoT sensor data collection
+   ans: NOSQL-- Generates massive continuous data streams 
+                Data can be semi-structured or unstructured
+                Needs horizontal scaling
+
+Exercise 2: CAP Theorem Analysis
+For each scenario, identify which CAP properties are prioritized:
+1. Stock trading platform
+   ans: CP (Consistency + Partition Tolerance)
+        Data must be accurate and up-to-date (no wrong trades)
+        Network failures can happen → must tolerate partitions
+        Availability can be sacrificed (better to delay than show wrong price)
+2. Content delivery network
+   ans: AP (Availability + Partition Tolerance)
+        Content (videos, images) should always be accessible
+        Slightly outdated data is acceptable (cache)
+        Strong consistency is not required
+3. Airline booking system
+   ans: Airline Booking System → CP (Consistency + Partition Tolerance)
+        Seat booking must be accurate (no double booking)
+        System must handle network issues
+        Availability may be reduced (temporary booking failure is okay)
+4. Video streaming service
+   ans:Video Streaming Service → AP (Availability + Partition Tolerance)
+       Users expect continuous streaming
+       Slight delay or lower quality (inconsistency) is acceptable
+       Strict consistency not required
+
+Exercise 3: MongoDB Operations
+Create a database for a library system with operations for:
+1. Adding new books:
+db.books.insertOne({
+  title: "Atomic Habits",
+  author: "James Clear",
+  available: true,
+  borrower: null
+})
+2. Finding books by author:
+db.books.find({ author: "James Clear" })
+3. Updating book availability:
+db.books.updateOne(
+  { title: "1984" },
+  { $set: { available: false, borrower: "Rudra" } }
+)
+
+4. Tracking borrowed books by user    :
+db.books.find({ borrower: "Rudra" })   
+
+Exercise 4: JSON to BSON
+Convert the following JSON to proper BSON types:
+{
+"orderId": "12345",
+"orderDate": "2024-01-15",
+"totalAmount": "99.99",
+"items": ["item1", "item2"]
+}
+
+{orderId: 12345,orderDate: ISODate("2024-01-15"),totalAmount: 99.99,items: ["item1", "item2"]}
+
+Explain the key differences between SQL and NoSQL databases with examples.
+
+1. SQL Databases
+
+SQL databases are relational databases that store data in the form of tables (rows and columns). They use a fixed structure (schema), which means the format of data must be defined before storing it.
+
+Examples: MySQL, PostgreSQL
+
+Example:
+A table storing user data:
+
+ID | Name | Age
+1 | John | 25
+
+SQL query example:
+SELECT * FROM Users WHERE age > 20;
+
+NoSQL Databases
+
+NoSQL databases are non-relational databases that store data in flexible formats like documents, key-value pairs, or graphs. They do not require a fixed schema, so data can be stored in different structures.
+
+Examples: MongoDB, Redis
+
+Example:
+A document in MongoDB:
+{
+  "name": "John",
+  "age": 25
+}
+Query example:
+db.users.find({ age: { $gt: 20 } })
+
+What does the CAP theorem state, and why can’t a distributed system guarantee all three
+properties?
+The CAP Theorem states that a distributed system can provide only two out of three properties at the same time:
+
+Consistency (C): All users see the same data
+Availability (A): System always responds
+Partition Tolerance (P): System works even if network fails
+
+Why not all three?
+When a network failure (partition) happens, the system must choose:
+
+Either give correct data (Consistency)
+Or give response quickly (Availability)
+
+It cannot guarantee both at the same time during failure.
+
+
+ Describe three scenarios where MongoDB would be preferred over a relational database.
+ MongoDB is preferred over relational databases in these cases:
+
+Social Media Applications
+Data is large and unstructured (posts, comments, likes)
+Real-Time Applications (Chat/IoT)
+Need fast read/write and scalability
+Content Management Systems
+Data structure changes frequently (articles, blogs)
+
+
+ Why does MongoDB use BSON internally instead of storing documents as JSON?
+ MongoDB uses BSON because:
+
+Faster processing (binary format is quicker to parse)
+Supports more data types (Date, ObjectId, etc.)
+More efficient storage and indexing
+
+JSON is text-based, while BSON is optimized for performance.
+
+
+ Write MongoDB queries to find all students with GPA above 3.5 and enrolled in “CS101”.
+ db.students.find({
+  gpa: { $gt: 3.5 },
+  course: "CS101"
+})
+
+Exercise 1: Basic CRUD
+Create a complete Student management system with:
+1. Add new student
+2. View all students
+3. Find student by email
+4. Update student GPA
+5. Delete student
+
+db.students.insertOne({
+  name: "Rudra",
+  email: "rudra@gmail.com",
+  course: "CS101",
+  gpa: 3.6
+})
+db.students.insertMany([
+  { name: "Aman", email: "aman@gmail.com", course: "CS101", gpa: 3.2 },
+  { name: "Priya", email: "priya@gmail.com", course: "CS102", gpa: 3.8 }
+])
+db.students.find()
+db.students.findOne({ email: "rudra@gmail.com" })
+db.students.updateOne(
+  { email: "rudra@gmail.com" },
+  { $set: { gpa: 3.9 } }
+)
+db.students.deleteOne({ email: "rudra@gmail.com" })
+
+Exercise 2: Advanced Queries
+Write queries to:
+1. Find all students with GPA between 3.0 and 3.5
+
+2. Find students enrolled in more than 5 courses
+3. Get top 10 students by GPA
+4. Count students by city
+db.students.find({
+  gpa: { $gte: 3.0, $lte: 3.5 }
+})
+db.students.find({
+  courses: { $size: 6 }
+})
+db.students.find({
+  "courses.5": { $exists: true }
+})
+db.students.find()
+  .sort({ gpa: -1 })
+  .limit(10)
+  db.students.aggregate([
+  {
+    $group: {
+      _id: "$city",
+      totalStudents: { $sum: 1 }
+    }
+  }
+])
+
+Exercise 3: Schema Design
+Design schemas for:
+1. Course with prerequisites
+2. Professor with multiple departments
+3. Grade with student and course references
+{
+  _id: ObjectId(),
+  courseName: "Data Structures",
+  courseCode: "CS201",
+  credits: 4,
+  prerequisites: ["CS101", "CS102"]   // list of prerequisite course codes
+}
+{
+  _id: ObjectId(),
+  name: "Dr. Sharma",
+  email: "sharma@college.com",
+  departments: ["Computer Science", "Information Technology"]
+}
+{
+  _id: ObjectId(),
+  studentId: ObjectId("64ab1234..."),   // reference to student
+  courseId: ObjectId("64cd5678..."),    // reference to course
+  grade: "A",
+  semester: "Spring 2024"
+}
+
+
+Exercise 4: Aggregation
+Create aggregation pipelines to:
+1. Calculate average GPA by department
+2. Find most popular courses
+3. Generate student performance report
+
+db.students.aggregate([
+  {
+    $group: {
+      _id: "$department",
+      avgGPA: { $avg: "$gpa" }
+    }
+  }
+])
+db.students.aggregate([
+  {
+    $group: {
+      _id: "$course",
+      totalStudents: { $sum: 1 }
+    }
+  },
+  { $sort: { totalStudents: -1 } }
+])
+db.students.aggregate([
+  {
+    $project: {
+      name: 1,
+      department: 1,
+      gpa: 1,
+      performance: {
+        $cond: {
+          if: { $gte: ["$gpa", 3.5] },
+          then: "Excellent",
+          else: {
+            $cond: {
+              if: { $gte: ["$gpa", 2.5] },
+              then: "Good",
+              else: "Needs Improvement"
+            }
+          }
+        }
+      }
+    }
+  }
+])
+
+
+1. What are the advantages of using Mongoose over the native MongoDB driver?
+1. Advantages of using Mongoose
+
+Mongoose is easier to use than the native MongoDB driver because:
+
+Provides schema-based structure (better organization)
+Built-in validation (e.g., required fields)
+Supports middleware (hooks)
+Easy data relationships using references
+Cleaner and shorter code
+
+
+2. Explain the difference between findOneAndUpdate() and updateOne().
+findOneAndUpdate()
+
+Finds and updates a document
+Can return the updated document
+Example:Model.findOneAndUpdate(
+  { email: "test@gmail.com" },
+  { gpa: 3.8 },
+  { new: true }
+)
+updateOne()
+
+Only updates the document
+Returns update status, not the document
+Model.updateOne(
+  { email: "test@gmail.com" },
+  { $set: { gpa: 3.8 } }
+)
+
+
+
+3. What is the purpose of middleware in Mongoose?
+Middleware (also called hooks) are functions that run before or after database operations.
+
+Used for:
+
+Validation
+Logging
+Password hashing
+
+Example:schema.pre("save", function(next) {
+  console.log("Before saving data");
+  next();
+});
+
+
+
+4. How do you implement pagination in Mongoose?
+Pagination is used to limit and skip data for large datasets.
+const page = 1;
+const limit = 10;
+
+Model.find()
+  .skip((page - 1) * limit)
+  .limit(limit);
+
+
+
+5. When should you use embedding vs referencing in MongoDB schema design?
+Embedding
+Store data inside one document
+Faster read
+Use when data is small and related
+{
+  "name": "Rudra",
+  "courses": ["CS101", "CS102"]
+}
+
+Referencing
+Store data in separate collections using IDs
+Avoids duplication
+Use when data is large or shared
+{
+  "studentId": "123",
+  "courseId": "456"
+}
