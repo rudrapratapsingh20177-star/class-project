@@ -1,57 +1,49 @@
-const fs = require("fs");
+import express from "express"
+import mongoose from "mongoose"
+// import User from "./Models/user.js"
 
+//Calling routes
+import create_book from "./controllers/createbook.js"
+import member from "./controllers/member.js"
+import borrow_record from "./controllers/BorrowRecord.js"
 
-function createLog(date, type, data) {
-  fs.writeFileSync(
-    "hello.txt",
-    `Date: ${date}\nType: ${type}\nMessage: ${data}\n\n`
-  );
-  return "Log created successfully";
-}
+const app=express()
+const PORT=8008
 
+//connection
+mongoose.connect('mongodb://127.0.0.1:27017/Library').then(()=> console.log("MongoDB connected")).catch(err=> console.log("Error",err))
 
-function readLog() {
-  if (!fs.existsSync("hello.txt")) {
-    return "File does not exist";
-  }
+app.use(express.urlencoded({extended:false}))
 
-  const content = fs.readFileSync("hello.txt", "utf-8");
-  return content;
-}
+//Routes
+// app.get("/",(req,res)=>{
+//     res.status(200).send("Event Booking API is running")
+// })
+// app.get("/users",async (req,res)=>{
+//     const allusers=await User.find({})
+//     res.status(302).json(allusers)
+// })
+app.post("/api/createbooks",create_book)
+app.post("/api/member",member)
+app.post("/api/borrow",borrow_record)
 
+// app.get("/login/:id",async (req,res)=>{
+//     const user=await User.findById(req.params.id)
+//     if(!user){
+//         res.status(404).send("User not found")
+//     }
+//     res.status(302).json(user)
+// })
+// app.patch("/update/:id",async (req,res)=>{
+//     const {name,last_name,hashedPassword}=req.body
+//     await User.findByIdAndUpdate(req.params.id,{name:name,last_name:last_name,hashedPassword:hashedPassword})
+//     res.status(202).send("Update successfully")
+// })
+// app.delete("/delete/:id",async (req,res)=>{
+//     await User.findByIdAndDelete(req.params.id)
+//     res.status(202).send("Delete successfully")
+// })
 
-function updateLog(date, type, data) {
-  fs.appendFileSync(
-    "hello.txt",
-    `Date: ${date}\nType: ${type}\nMessage: ${data}\n\n`
-  );
-  return "Log updated successfully";
-}
-
-
-function deleteLog() {
-  if (!fs.existsSync("hello.txt")) {
-    return "File already deleted";
-  }
-
-  fs.unlinkSync("hello.txt");
-  return "Log deleted successfully";
-}
-
-
-function writeLog() {
-  fs.appendFileSync(
-    "hello.txt",
-    `Time: ${new Date()}\nMessage: Log created\n-----------------\n`
-  );
-
-  console.log("Log written");
-}
-
-console.log(createLog(new Date(), "ERROR", "This is an error"));
-//console.log(updateLog(new Date(), "INFO", "This is info log"));
-console.log(readLog());
-setInterval(() => {
-  console.log(updateLog(new Date(), "INFO", "This is info log"));
-}, 1000);
-updateLog(new Date(), "INFO", "This is info log");
+app.listen(PORT,()=>{
+    console.log("Server started")
+})
